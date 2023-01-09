@@ -4,6 +4,7 @@ import 'package:flutter_chat_app/src/blocs/app_bloc_observer.dart';
 import 'package:flutter_chat_app/src/common_widgets/error/error_page_widgets.dart';
 import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
 import 'package:flutter_chat_app/src/features/auth/login/login_screen.dart';
+import 'package:flutter_chat_app/src/features/auth/signup/signup_screen.dart';
 
 void main() {
   Bloc.observer = AppBlocObserver();
@@ -36,9 +37,9 @@ class _MyAppState extends State<MyApp> {
             case RouteAuth.routeLogin:
               page = const LoginScreen();
               break;
-            // case RouteAuth.routeSignup:
-            //   page = const SignupScreen();
-            //   break;
+            case RouteAuth.routeSignup:
+              page = const SignupScreen();
+              break;
 
             default:
               page = const ErrorPageWidget();

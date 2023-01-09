@@ -57,15 +57,27 @@ class SignupScreenState extends State<SignupScreen> {
                   key: _formKey,
                   child: Column(children: [
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(1)),
+                      padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(2)),
                       child: Center(
-                          child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.add_outlined,
-                          size: DimensionsCustom.calculateWidth(10),
+                        child: Ink(
+                          width: DimensionsCustom.calculateWidth(18),
+                          height: DimensionsCustom.calculateWidth(18),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            shape: BoxShape.circle,
+                          ),
+                          child: InkWell(
+                            borderRadius:
+                                BorderRadius.circular(DimensionsCustom.calculateWidth(10)),
+                            onTap: () {},
+                            child: Icon(
+                              Icons.add_outlined,
+                              color: Colors.blueAccent,
+                              size: DimensionsCustom.calculateWidth(10),
+                            ),
+                          ),
                         ),
-                      )),
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(

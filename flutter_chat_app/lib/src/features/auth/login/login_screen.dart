@@ -30,14 +30,16 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
           toolbarHeight: 0,
+          elevation: 0,
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.white,
+            statusBarColor: Colors.blue,
             statusBarBrightness: Brightness.dark,
           )),
       body: SafeArea(child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
           return SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Image.asset(
                   'assets/images/facebook_banner.png',
@@ -51,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: DimensionsCustom.calculateWidth(4),
-                            vertical: DimensionsCustom.calculateWidth(2)),
+                            vertical: DimensionsCustom.calculateWidth(4)),
                         child: TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
