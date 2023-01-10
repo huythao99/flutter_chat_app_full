@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/constants/validate_text.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_chat_app/src/constants/regex.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -116,11 +118,9 @@ class SignupScreenState extends State<SignupScreen> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter some text';
+                    } else if (!RegexPattern.regexEmail.hasMatch(value.trim())) {
+                      return 'Please enter email correct';
                     }
-                    //  else if (!RegexPattern.regexEmail
-                    //     .hasMatch(value.trim())) {
-                    //   return 'Please enter email correct';
-                    // }
                     return null;
                   },
                   keyboardAppearance: Brightness.dark,
@@ -138,9 +138,9 @@ class SignupScreenState extends State<SignupScreen> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Please enter some text';
-                    } else if (value.trim().length < 6) {
+                    } else if (value.trim().length < ValidateText.minLength) {
                       return 'Password must at least 6 characters';
-                    } else if (value.trim().length > 32) {
+                    } else if (value.trim().length > ValidateText.maxLength) {
                       return 'Password must be max 32 character';
                     }
                     return null;
@@ -188,6 +188,14 @@ class SignupScreenState extends State<SignupScreen> {
                     horizontal: DimensionsCustom.calculateWidth(4),
                     vertical: DimensionsCustom.calculateHeight(1)),
                 child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your phone number';
+                    } else if (!RegexPattern.regexPhone.hasMatch(value.trim())) {
+                      return 'Your phone number is invalid';
+                    }
+                    return null;
+                  },
                   keyboardAppearance: Brightness.dark,
                   controller: _phone,
                   decoration: const InputDecoration(
@@ -199,6 +207,16 @@ class SignupScreenState extends State<SignupScreen> {
                     horizontal: DimensionsCustom.calculateWidth(4),
                     vertical: DimensionsCustom.calculateHeight(1)),
                 child: TextFormField(
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your name';
+                    } else if (value.trim().length < ValidateText.minLength) {
+                      return 'Your name is too short';
+                    } else if (value.trim().length > ValidateText.maxLength) {
+                      return 'Your name is too long';
+                    }
+                    return null;
+                  },
                   keyboardAppearance: Brightness.dark,
                   controller: _name,
                   decoration: const InputDecoration(
