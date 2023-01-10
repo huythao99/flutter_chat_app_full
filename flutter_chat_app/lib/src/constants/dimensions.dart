@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DimensionsCustom {
-  static double widthScreen =
-      MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width;
+  static double widthScreen = MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.width;
   static double heightScreen =
       MediaQueryData.fromWindow(WidgetsBinding.instance.window).size.height;
 

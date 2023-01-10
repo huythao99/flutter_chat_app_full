@@ -42,18 +42,25 @@ class SignupScreenState extends State<SignupScreen> {
 
   Future<void> _onPickerAvatar() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      debugPrint('image');
-      debugPrint(image?.path);
-      // setState(() {
-      //   _image = image;
-      // });
+      var image = await _picker.pickImage(source: ImageSource.gallery);
+      setState(() {
+        _image = image;
+      });
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
     }
   }
 
-  Future<void> _onPressSignup() async {}
+  Future<void> _onPressSignup() async {
+    // debugPrint(_formKey.currentState.toString());
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Processing Data')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,23 +84,27 @@ class SignupScreenState extends State<SignupScreen> {
                 padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(2)),
                 child: Center(
                   child: Ink(
-                    width: DimensionsCustom.calculateWidth(18),
-                    height: DimensionsCustom.calculateWidth(18),
+                    width: DimensionsCustom.calculateWidth(30),
+                    height: DimensionsCustom.calculateWidth(30),
                     decoration: BoxDecoration(
                       border: Border.all(),
                       shape: BoxShape.circle,
                     ),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(DimensionsCustom.calculateWidth(10)),
-                      onTap: _onPickerAvatar,
-                      child: (_image != null)
-                          ? Image.file(File(_image?.path ?? ''))
-                          : Icon(
-                              Icons.add_outlined,
-                              color: Colors.blueAccent,
-                              size: DimensionsCustom.calculateWidth(10),
-                            ),
-                    ),
+                        borderRadius: BorderRadius.circular(DimensionsCustom.calculateWidth(15)),
+                        onTap: _onPickerAvatar,
+                        child: _image != null
+                            ? ClipRRect(
+                                borderRadius:
+                                    BorderRadius.circular(DimensionsCustom.calculateWidth(15)),
+                                child: Image.file(
+                                  File(_image!.path),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(Icons.add_outlined,
+                                color: Colors.blueAccent,
+                                size: DimensionsCustom.calculateWidth(15))),
                   ),
                 ),
               ),
@@ -103,9 +114,10 @@ class SignupScreenState extends State<SignupScreen> {
                     vertical: DimensionsCustom.calculateHeight(1)),
                 child: TextFormField(
                   validator: (value) {
-                    // if (value == null || value.trim().isEmpty) {
-                    //   return 'Please enter some text';
-                    // } else if (!RegexPattern.regexEmail
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    //  else if (!RegexPattern.regexEmail
                     //     .hasMatch(value.trim())) {
                     //   return 'Please enter email correct';
                     // }
