@@ -16,4 +16,5 @@
   "editor.defaultFormatter": "Dart-Code.dart-code",
   "editor.formatOnSave": true,
   "dart.lineLength": 100,
+  "dart.flutterHotReloadOnSave": "all",
 }

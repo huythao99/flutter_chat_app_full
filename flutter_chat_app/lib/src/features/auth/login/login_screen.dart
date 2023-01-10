@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
-import 'package:image_picker/image_picker.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,7 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _showPassword = false;
 
-  final ImagePicker _picker = ImagePicker();
   final TextEditingController _emailController = TextEditingController();
 
   void _onClickEye() {
