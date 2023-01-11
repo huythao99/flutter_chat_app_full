@@ -31,6 +31,6 @@ export class CreateUserDto {
   // avatar: Express.Multer.File;
 
   @IsNotEmpty()
-  @IsFirebasePushId()
+  // @IsFirebasePushId()
   fcmtoken: string;
 }

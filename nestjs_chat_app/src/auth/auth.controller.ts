@@ -7,6 +7,9 @@ import {
   HttpStatus,
   UseInterceptors,
   UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
@@ -35,9 +38,26 @@ export class AuthController {
   }
 
   @Post('auth/signup')
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      dest: '123',
+    }),
+  )
   async register(
-    @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: true,
+        validators: [
+          // ... Set of file validator instances here
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new FileTypeValidator({
+            fileType: 'image/png',
+          }),
+        ],
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+      }),
+    )
+    avatar: Express.Multer.File,
     @Body() signupParams: CreateUserDto,
   ) {
     try {
