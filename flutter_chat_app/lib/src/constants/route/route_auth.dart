@@ -1,4 +1,4 @@
 class RouteAuth {
-  static const routeLogin = 'login';
-  static const routeSignup = 'signup';
+  static const routeLogin = 'login_page';
+  static const routeSignup = 'signup_page';
 }

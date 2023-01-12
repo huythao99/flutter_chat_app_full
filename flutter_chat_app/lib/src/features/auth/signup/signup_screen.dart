@@ -1,10 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/src/apis/client_api.dart';
+import 'package:flutter_chat_app/src/apis/models/user/user_info_model.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 import 'package:flutter_chat_app/src/constants/validate_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_chat_app/src/constants/regex.dart';
+import 'package:dio/dio.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -56,11 +60,27 @@ class SignupScreenState extends State<SignupScreen> {
   Future<void> _onPressSignup() async {
     // debugPrint(_formKey.currentState.toString());
     if (_formKey.currentState!.validate()) {
+      try {
+        Map<String, dynamic> body = {
+          'email': _email.text,
+          'password': _pass.text,
+          'username': _name.text,
+          'phone': _phone.text,
+          'fcmtoken': '123',
+          'avatar': {
+            'mimeType': 'image/png',
+            'path': _image?.path,
+            'name': _image?.name,
+          },
+        };
+        Response res = await ClientApi.postApi('auth/signup', body, true);
+        debugPrint(res.data.toString());
+        debugPrint(User.fromJson(res.data).toJson().toString());
+      } catch (e) {
+        debugPrint(e.toString());
+      }
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Processing Data')),
-      );
     }
   }
 
@@ -197,6 +217,7 @@ class SignupScreenState extends State<SignupScreen> {
                     return null;
                   },
                   keyboardAppearance: Brightness.dark,
+                  keyboardType: TextInputType.phone,
                   controller: _phone,
                   decoration: const InputDecoration(
                       border: UnderlineInputBorder(), labelText: 'Enter your phone number'),

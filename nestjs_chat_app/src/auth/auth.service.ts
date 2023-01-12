@@ -58,13 +58,16 @@ export class AuthService {
       ...user,
       avatar: newAvatar.url,
     });
+    console.log(newUser.toObject());
+    console.log(typeof newUser);
     const payload = { username: user.email, sub: jwtConstants.secret };
     return {
       access_token: this.jwtService.sign(payload, {
         expiresIn: 60,
       }),
       refresh_token: this.jwtService.sign(payload),
-      ...newUser,
+      ...newUser.toObject(),
+      avatar: newAvatar.url,
     };
   }
 }

@@ -49,9 +49,9 @@ export class AuthController {
         fileIsRequired: true,
         validators: [
           // ... Set of file validator instances here
-          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new MaxFileSizeValidator({ maxSize: 100000 * 100 }),
           new FileTypeValidator({
-            fileType: 'image/png',
+            fileType: /(^image+(\/(jpg|png|gif|bmp))$)/,
           }),
         ],
         errorHttpStatusCode: HttpStatus.BAD_REQUEST,

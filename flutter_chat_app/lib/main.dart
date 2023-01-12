@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/blocs/app_bloc_observer.dart';
 import 'package:flutter_chat_app/src/common_widgets/error/error_page_widgets.dart';
 import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
+import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_chat_app/src/features/auth/login/login_screen.dart';
 import 'package:flutter_chat_app/src/features/auth/signup/signup_screen.dart';
+import 'package:flutter_chat_app/src/features/home/home_screen.dart';
 
 void main() {
   Bloc.observer = AppBlocObserver();
+  ClientApi.initClientApi();
   runApp(const MyApp());
 }
 
@@ -28,6 +32,9 @@ class _MyAppState extends State<MyApp> {
         late Widget page;
         if (authenticated) {
           switch (settings.name) {
+            case RouteMain.routeHome:
+              page = const HomeScreen();
+              break;
             default:
               page = const ErrorPageWidget();
               break;
