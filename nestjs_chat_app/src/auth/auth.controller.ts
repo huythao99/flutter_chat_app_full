@@ -40,7 +40,7 @@ export class AuthController {
   @Post('auth/signup')
   @UseInterceptors(
     FileInterceptor('avatar', {
-      dest: '123',
+      dest: 'assets/images/',
     }),
   )
   async register(

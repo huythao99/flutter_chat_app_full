@@ -54,18 +54,17 @@ export class AuthService {
       throw new HttpException('Email already used', HttpStatus.BAD_REQUEST);
     }
     const newAvatar = await this.cloudinary.uploadImage(TYPE.AVATAR, avatar);
-    // const newUser = await this.userModel.create({
-    //   ...user,
-    //   avatar: newAvatar.url,
-    // });
+    const newUser = await this.userModel.create({
+      ...user,
+      avatar: newAvatar.url,
+    });
     const payload = { username: user.email, sub: jwtConstants.secret };
     return {
       access_token: this.jwtService.sign(payload, {
         expiresIn: 60,
       }),
       refresh_token: this.jwtService.sign(payload),
-      avatar: newAvatar,
-      // ...newUser,
+      ...newUser,
     };
   }
 }

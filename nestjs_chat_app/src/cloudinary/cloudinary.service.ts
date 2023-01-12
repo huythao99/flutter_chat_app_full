@@ -8,8 +8,7 @@ export class CloudinaryService {
     type: TYPE,
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    console.log('path', file);
-    return v2.uploader.upload(file.buffer.toString(), {
+    return v2.uploader.upload(file.path, {
       folder: type,
       filename_override: `${type}/${file.filename}`,
     });
