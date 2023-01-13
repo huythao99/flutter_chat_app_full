@@ -12,6 +12,8 @@ class User {
   Map<String, dynamic> toJson() => {
         "data": data.toJson(),
       };
+
+  static final empty = User(data: Data.empty);
 }
 
 class Data {
@@ -56,4 +58,6 @@ class Data {
         "password": password,
         "refreshToken": refreshToken,
       };
+
+  static final empty = Data(id: '', email: '', name: '', avatar: '', phone: '', password: '');
 }

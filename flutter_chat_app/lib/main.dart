@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/blocs/app_bloc_observer.dart';
+import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
+import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
 import 'package:flutter_chat_app/src/common_widgets/error/error_page_widgets.dart';
 import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
 import 'package:flutter_chat_app/src/constants/route/route_main.dart';
@@ -27,42 +29,56 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateRoute: (settings) {
-        late Widget page;
-        if (authenticated) {
-          switch (settings.name) {
-            case RouteMain.routeHome:
-              page = const HomeScreen();
-              break;
-            default:
-              page = const ErrorPageWidget();
-              break;
-          }
-        } else {
-          switch (settings.name) {
-            case RouteAuth.routeLogin:
-              page = const LoginScreen();
-              break;
-            case RouteAuth.routeSignup:
-              page = const SignupScreen();
-              break;
-
-            default:
-              page = const ErrorPageWidget();
-              break;
-          }
-        }
-
-        return MaterialPageRoute<dynamic>(
-          builder: (context) {
-            return page;
+    return BlocProvider(
+        create: (_) => UserBloc(),
+        child: BlocBuilder<UserBloc, UserState>(
+          buildWhen: (previousState, state) {
+            // return true/false to determine whether or not
+            // to rebuild the widget with state
+            if (previousState.user?.data.token == state.user?.data.token) {
+              return false;
+            }
+            return true;
           },
-          settings: settings,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
-    );
+          builder: (context, state) {
+            return MaterialApp(
+              onGenerateRoute: (settings) {
+                late Widget page;
+                if (authenticated) {
+                  switch (settings.name) {
+                    case RouteMain.routeHome:
+                      page = const HomeScreen();
+                      break;
+                    default:
+                      page = const ErrorPageWidget();
+                      break;
+                  }
+                } else {
+                  switch (settings.name) {
+                    case RouteAuth.routeLogin:
+                      page = const LoginScreen();
+                      break;
+                    case RouteAuth.routeSignup:
+                      page = const SignupScreen();
+                      break;
+
+                    default:
+                      page = const ErrorPageWidget();
+                      break;
+                  }
+                }
+
+                return MaterialPageRoute<dynamic>(
+                  builder: (context) {
+                    return page;
+                  },
+                  settings: settings,
+                );
+              },
+              debugShowCheckedModeBanner: false,
+              home: const LoginScreen(),
+            );
+          },
+        ));
   }
 }
