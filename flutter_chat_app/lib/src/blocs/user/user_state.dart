@@ -11,5 +11,5 @@ class UserState {
 
   final User? user;
 
-  List<Object> get userInfo => [user ?? {}];
+  String get userToken => user?.data.token ?? '';
 }

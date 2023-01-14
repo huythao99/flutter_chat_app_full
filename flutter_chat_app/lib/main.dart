@@ -25,23 +25,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   bool authenticated = false;
+
+  void _onChangeStatus(bool status) {
+    setState(() {
+      authenticated = status;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (_) => UserBloc(),
-        child: BlocBuilder<UserBloc, UserState>(
-          buildWhen: (previousState, state) {
-            // return true/false to determine whether or not
-            // to rebuild the widget with state
-            if (previousState.user?.data.token == state.user?.data.token) {
-              return false;
-            }
-            return true;
-          },
-          builder: (context, state) {
-            return MaterialApp(
+        child: BlocListener<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state.userToken != '' && !authenticated) {
+                _onChangeStatus(true);
+                navigatorKey.currentState
+                    ?.pushNamedAndRemoveUntil(RouteMain.routeHome, (route) => false);
+              } else {
+                _onChangeStatus(false);
+                navigatorKey.currentState
+                    ?.pushNamedAndRemoveUntil(RouteAuth.routeLogin, (route) => false);
+              }
+            },
+            listenWhen: (previous, current) {
+              return previous.userToken != current.userToken;
+            },
+            child: MaterialApp(
+              navigatorKey: navigatorKey,
               onGenerateRoute: (settings) {
                 late Widget page;
                 if (authenticated) {
@@ -76,9 +90,7 @@ class _MyAppState extends State<MyApp> {
                 );
               },
               debugShowCheckedModeBanner: false,
-              home: const LoginScreen(),
-            );
-          },
-        ));
+              home: authenticated ? const HomeScreen() : const LoginScreen(),
+            )));
   }
 }

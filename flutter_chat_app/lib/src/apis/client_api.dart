@@ -3,7 +3,8 @@ import 'package:http_parser/http_parser.dart';
 
 class ClientApi {
   // static const baseURL = 'http://192.168.1.58:3000/';
-  static const baseURL = 'http://10.0.11.47:3000/';
+  // static const baseURL = 'http://10.0.11.47:3000/';
+  static const baseURL = 'http://192.168.0.100:3000/';
   static const headers = {'content-type': 'application/json'};
   static Dio? _dio;
 

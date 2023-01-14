@@ -9,7 +9,6 @@ import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
-import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_chat_app/src/constants/validate_text.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_chat_app/src/constants/regex.dart';
@@ -83,8 +82,6 @@ class SignupScreenState extends State<SignupScreen> {
         };
         Response res = await ClientApi.postApi('auth/signup', body, true);
         if (res.data != null && context.mounted) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil(RouteMain.routeHome, (Route<dynamic> route) => false);
           BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(res.data)));
         }
         // debugPrint(res.data.toString());
