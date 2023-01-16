@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/models/user/user_info_model.dart';
+import 'package:flutter_chat_app/src/apis/paths/auth_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
@@ -80,7 +81,7 @@ class SignupScreenState extends State<SignupScreen> {
             'name': _image?.name,
           },
         };
-        Response res = await ClientApi.postApi('auth/signup', body, true);
+        Response res = await ClientApi.postApi(AuthPath.signup, body, true);
         if (res.data != null && context.mounted) {
           BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(res.data)));
         }
