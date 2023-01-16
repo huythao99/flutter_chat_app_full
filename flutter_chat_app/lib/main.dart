@@ -10,10 +10,13 @@ import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_chat_app/src/features/auth/login/login_screen.dart';
 import 'package:flutter_chat_app/src/features/auth/signup/signup_screen.dart';
 import 'package:flutter_chat_app/src/features/home/home_screen.dart';
+import 'package:flutter_chat_app/src/local_storage/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   Bloc.observer = AppBlocObserver();
   ClientApi.initClientApi();
+  SharedStorage.initPreference();
   runApp(const MyApp());
 }
 
@@ -33,6 +36,18 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       authenticated = status;
     });
+  }
+
+  void onStart() {
+    final String user = SharedStorage.getStringData('user');
+    debugPrint('user $user');
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    onStart();
   }
 
   @override

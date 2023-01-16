@@ -41,6 +41,7 @@ dependencies:
   dio: ^4.0.6
   http_parser: ^4.0.2
   bloc: ^8.1.0
+  shared_preferences: ^2.0.16
 
 dev_dependencies:
   flutter_test:
