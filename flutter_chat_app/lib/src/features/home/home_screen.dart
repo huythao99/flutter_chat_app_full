@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/features/home/tabs/messenger/messenger_tab.dart';
+import 'package:flutter_chat_app/src/features/home/tabs/setting/setting_tab.dart';
 import 'package:flutter_svg/svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,20 +16,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   late Animation _animation;
 
   int _selectedIndex = 0;
-  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    MessengerTab(),
+    SettingTab(),
   ];
 
   void _onItemTapped(int index) {
@@ -60,7 +51,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         toolbarOpacity: 0,
         backgroundColor: Colors.white,
       ),
-      body: Center(
+      backgroundColor: Colors.white,
+      body: Container(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -128,18 +120,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SvgPicture.asset(
-                        'assets/icons/user.svg',
-                        width: DimensionsCustom.calculateWidth(7),
-                        color:
-                            _selectedIndex == 1 ? Colors.blue.shade400 : Colors.blueGrey.shade100,
+                      Transform.rotate(
+                        angle: (_animation.value - 120.0),
+                        child: SvgPicture.asset(
+                          'assets/icons/gear.svg',
+                          width: DimensionsCustom.calculateWidth(7),
+                          color:
+                              _selectedIndex == 1 ? Colors.blue.shade400 : Colors.blueGrey.shade100,
+                        ),
                       ),
                       if (_animationController.value == 1.0)
                         Padding(
                           padding:
                               EdgeInsets.symmetric(horizontal: DimensionsCustom.calculateWidth(2)),
                           child: Text(
-                            'Profile',
+                            'Setting',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: DimensionsCustom.calculateWidth(5),

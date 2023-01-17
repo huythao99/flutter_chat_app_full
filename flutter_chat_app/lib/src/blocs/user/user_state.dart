@@ -12,4 +12,6 @@ class UserState {
   final User? user;
 
   String get userToken => user?.data.token ?? '';
+
+  String get userAvatar => user?.data.avatar ?? '';
 }

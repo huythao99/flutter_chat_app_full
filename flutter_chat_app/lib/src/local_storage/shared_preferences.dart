@@ -1,17 +1,31 @@
+import 'dart:convert';
+
+import 'package:flutter_chat_app/src/constants/key_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedStorage {
-  static SharedPreferences? _instance;
+  static SharedPreferences? prefs;
 
-  static initPreference() async {
-    _instance ??= await SharedPreferences.getInstance();
+  initPreferences() async {
+    prefs = await SharedPreferences.getInstance();
   }
 
-  static Future<void> saveStringData(String key, String value) async {
-    await _instance?.setString(key, value);
+  Future<void> saveStringData(String key, String value) async {
+    await prefs?.setString(key, value);
   }
 
-  static String getStringData(String key) {
-    return _instance?.getString(key) ?? '';
+  Future<String> getStringData(String key) async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs?.getString(key) ?? '';
+  }
+
+  Future<String?> getTokenData() async {
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs?.getString(KeyStorage.user) ?? '';
+    if (user == '') {
+      return null;
+    } else {
+      return jsonDecode(user)['access_token'];
+    }
   }
 }

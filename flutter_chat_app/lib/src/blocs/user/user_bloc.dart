@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/models/user/user_info_model.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
@@ -25,8 +25,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) {
     if (event.user != null) {
+      ClientApi.setToken(event.user?.data.token);
       emit(UserState.updateUser(event.user));
     } else {
+      ClientApi.removeToken();
       emit(const UserState.updateUser(null));
     }
   }

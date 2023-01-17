@@ -11,6 +11,7 @@ import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 import 'package:flutter_chat_app/src/constants/validate_text.dart';
+import 'package:flutter_chat_app/src/utils/error_handler.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_chat_app/src/constants/regex.dart';
 import 'package:dio/dio.dart';
@@ -87,10 +88,8 @@ class SignupScreenState extends State<SignupScreen> {
         }
         // debugPrint(res.data.toString());
         // debugPrint(User.fromJson(res.data).toJson().toString());
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+      } on DioError catch (e) {
+        ErrorHandler().showMessage(e, context);
       }
       // If the form is valid, display a snackbar. In the real world,
       // you'd often call a server or save the information in a database.

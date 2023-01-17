@@ -18,8 +18,8 @@ export class LoginUserDto {
     message: 'Password less than 32 characters',
   })
   password: string;
-
-  @IsNotEmpty()
-  @IsFirebasePushId()
-  fcmtoken: string;
+  //
+  //   @IsNotEmpty()
+  //   @IsFirebasePushId()
+  //   fcmtoken: string;
 }

@@ -42,7 +42,7 @@ export class AuthService {
         expiresIn: 60,
       }),
       refresh_token: this.jwtService.sign(payload),
-      ...res,
+      ...res.toObject(),
     };
   }
 

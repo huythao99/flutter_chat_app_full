@@ -5,7 +5,7 @@ class ClientApi {
   // static const baseURL = 'http://192.168.1.58:3000/';
   static const baseURL = 'http://10.0.11.47:3000/';
   // static const baseURL = 'http://192.168.0.100:3000/';
-  static const headers = {'content-type': 'application/json'};
+  static var headers = {'content-type': 'application/json'};
   static Dio? _dio;
 
   static initClientApi() {
@@ -56,5 +56,19 @@ class ClientApi {
 
   static deleteApi(String path, Map<String, dynamic> params) {
     return _dio?.delete(path, queryParameters: params);
+  }
+
+  static setToken(String? token) {
+    if (token != null) {
+      if (headers.containsKey('authorization')) {
+        headers.update('authorization', (value) => token);
+      } else {
+        headers['authorization'] = token;
+      }
+    }
+  }
+
+  static removeToken() {
+    headers.remove('authorization');
   }
 }
