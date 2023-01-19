@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MessengerTab extends StatefulWidget {
@@ -10,6 +11,10 @@ class MessengerTab extends StatefulWidget {
 }
 
 class _MessengerTabState extends State<MessengerTab> {
+  void _onPress() {
+    Navigator.of(context).pushNamed(RouteMain.routeChat);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -48,21 +53,64 @@ class _MessengerTabState extends State<MessengerTab> {
                 ),
               ],
             )),
-        // Expanded(child: ListView(
-        //   padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(1)),
-        //   children: [
-        //     GestureDetector(
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //           border: Border(bottom: BorderSide(color: Colors.grey.shade200))
-        //         ),
-        //         child: Row(
-        //
-        //         ),
-        //       ),
-        //     )
-        //   ],
-        // ))
+        Expanded(
+            child: ListView(
+          padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(1)),
+          children: [
+            InkWell(
+                onTap: _onPress,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: DimensionsCustom.calculateWidth(4),
+                      vertical: DimensionsCustom.calculateHeight(1.5)),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: DimensionsCustom.calculateWidth(18),
+                        height: DimensionsCustom.calculateWidth(18),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(DimensionsCustom.calculateWidth(10)),
+                          child: Image.network(
+                            'https://glyndwr.ac.uk/media/marketing/animals/sajad-nori-s1puI2BWQzQ-unsplash-2-1360x1360.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                          child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: DimensionsCustom.calculateWidth(4)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'User name',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: DimensionsCustom.calculateWidth(4)),
+                            ),
+                            SizedBox(
+                              height: DimensionsCustom.calculateHeight(2),
+                            ),
+                            Text(
+                              'message',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
+                            )
+                          ],
+                        ),
+                      )),
+                      Text(
+                        'Time',
+                        style: TextStyle(fontSize: DimensionsCustom.calculateWidth(3)),
+                      )
+                    ],
+                  ),
+                ))
+          ],
+        ))
       ],
     );
   }

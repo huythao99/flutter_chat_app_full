@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,13 +8,10 @@ import 'package:flutter_chat_app/src/apis/paths/auth_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
-import 'package:flutter_chat_app/src/constants/key_storage.dart';
 import 'package:flutter_chat_app/src/constants/regex.dart';
 import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
 import 'package:flutter_chat_app/src/constants/validate_text.dart';
-import 'package:flutter_chat_app/src/local_storage/shared_preferences.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -46,11 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
           'email': _emailController.text,
           'password': _passController.text,
         };
-        debugPrint(body.toString());
         Response res = await ClientApi.postApi(AuthPath.login, body, false);
         if (res.data != null && context.mounted) {
           BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(res.data)));
-          SharedStorage().saveStringData(KeyStorage.user, jsonEncode(res.data));
         }
         // debugPrint(res.data.toString());
         // debugPrint(User.fromJson(res.data).toJson().toString());

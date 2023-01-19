@@ -14,6 +14,7 @@ import 'package:flutter_chat_app/src/constants/route/route_auth.dart';
 import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_chat_app/src/features/auth/login/login_screen.dart';
 import 'package:flutter_chat_app/src/features/auth/signup/signup_screen.dart';
+import 'package:flutter_chat_app/src/features/chat/chat_screen.dart';
 import 'package:flutter_chat_app/src/features/home/home_screen.dart';
 import 'package:flutter_chat_app/src/local_storage/shared_preferences.dart';
 
@@ -88,6 +89,9 @@ class _MyAppState extends State<MyApp> {
               switch (settings.name) {
                 case RouteMain.routeHome:
                   page = const HomeScreen();
+                  break;
+                case RouteMain.routeChat:
+                  page = const ChatScreen();
                   break;
                 default:
                   page = const ErrorPageWidget();

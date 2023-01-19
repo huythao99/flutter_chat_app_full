@@ -14,6 +14,10 @@ class SharedStorage {
     await prefs?.setString(key, value);
   }
 
+  Future<void> removeStringData(String key) async {
+    await prefs?.remove(key);
+  }
+
   Future<String> getStringData(String key) async {
     // SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs?.getString(key) ?? '';
