@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
 
     final String user = await SharedStorage().getStringData(KeyStorage.user);
     if (user != '' && context.mounted) {
-      BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(jsonDecode(user))));
+      BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(jsonDecode(user)['data'])));
     } else {
       _onChangeStatus(false);
       navigatorKey.currentState?.pushNamedAndRemoveUntil(RouteAuth.routeLogin, (route) => false);

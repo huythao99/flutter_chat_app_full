@@ -83,7 +83,14 @@ class SignupScreenState extends State<SignupScreen> {
         };
         Response res = await ClientApi.postApi(AuthPath.signup, body, true);
         if (res.data != null && context.mounted) {
-          BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(res.data)));
+          Map<String, dynamic> newUser = {
+            ...res.data,
+            "token": res.data['token'],
+            "refreshToken": res.data['refresh_token'],
+            "id": res.data['_id'],
+            "name": res.data['username'],
+          };
+          BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(newUser)));
         }
         // debugPrint(res.data.toString());
         // debugPrint(User.fromJson(res.data).toJson().toString());

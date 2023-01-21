@@ -12,4 +12,6 @@ class DimensionsCustom {
   static double calculateHeight(double height) {
     return heightScreen / 100 * height;
   }
+
+  static double endReachedThreshold = 200.0;
 }

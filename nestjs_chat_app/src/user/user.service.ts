@@ -18,6 +18,7 @@ export class UserService {
           { phone: new RegExp(params.keyword, 'i') },
         ],
       })
+      .select('-password')
       .skip(params.page * PER_PAGE)
       .limit(PER_PAGE)
       .sort('asc')

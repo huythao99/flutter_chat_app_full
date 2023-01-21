@@ -23,14 +23,14 @@ class Data {
     required this.name,
     required this.avatar,
     required this.phone,
-    required this.password,
+    this.password,
     this.token,
     this.refreshToken,
   });
 
   String id;
   String email;
-  String password;
+  String? password;
   String phone;
   String name;
   String avatar;
@@ -38,14 +38,14 @@ class Data {
   String? refreshToken;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        id: json["_id"],
+        id: json["id"],
         email: json["email"],
-        name: json["username"],
+        name: json["name"],
         avatar: json["avatar"],
         phone: json['phone'],
         password: json['password'],
-        token: json['access_token'],
-        refreshToken: json['refresh_token'],
+        token: json['token'],
+        refreshToken: json['refreshToken'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -59,5 +59,5 @@ class Data {
         "refreshToken": refreshToken,
       };
 
-  static final empty = Data(id: '', email: '', name: '', avatar: '', phone: '', password: '');
+  static final empty = Data(id: '', email: '', name: '', avatar: '', phone: '');
 }
