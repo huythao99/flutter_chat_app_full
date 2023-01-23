@@ -10,13 +10,15 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LocalAuthGuard } from './local-auth.guard';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(private readonly appService: AuthService) {}
 
@@ -25,19 +27,13 @@ export class AuthController {
     return this.appService.getHello();
   }
 
-  @Post('auth/login')
-  async login(@Body() loginParams: LoginUserDto) {
-    try {
-      return this.appService.login(loginParams);
-    } catch (error) {
-      throw new HttpException(
-        new Error('Something went wrong'),
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@Request() req: any) {
+    return this.appService.login(req.user);
   }
 
-  @Post('auth/signup')
+  @Post('signup')
   @UseInterceptors(
     FileInterceptor('avatar', {
       dest: 'assets/images/',
