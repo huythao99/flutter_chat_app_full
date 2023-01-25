@@ -6,7 +6,6 @@ export class CreateConversationDto {
   sender: string;
 
   @IsNotEmpty()
-  @IsMongoId()
   @IsArray()
   receiver: string[];
 

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/models/user/user_info_model.dart';
-import 'package:flutter_chat_app/src/blocs/app_bloc_observer.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_event.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_state.dart';
@@ -17,10 +16,13 @@ import 'package:flutter_chat_app/src/features/auth/signup/signup_screen.dart';
 import 'package:flutter_chat_app/src/features/chat/chat_screen.dart';
 import 'package:flutter_chat_app/src/features/home/home_screen.dart';
 import 'package:flutter_chat_app/src/local_storage/shared_preferences.dart';
+import 'package:flutter_chat_app/src/models/chat_argument.dart';
+import 'package:flutter_chat_app/src/socket/client_socket.dart';
 
 void main() async {
-  Bloc.observer = AppBlocObserver();
   ClientApi.initClientApi();
+  ClientSocket.initial();
+
   runApp(MultiBlocProvider(providers: [
     BlocProvider<UserBloc>(
       create: (context) => UserBloc(),
@@ -48,7 +50,6 @@ class _MyAppState extends State<MyApp> {
 
   void onStart() async {
     await SharedStorage().initPreferences();
-
     final String user = await SharedStorage().getStringData(KeyStorage.user);
     if (user != '' && context.mounted) {
       BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(jsonDecode(user)['data'])));
@@ -91,7 +92,11 @@ class _MyAppState extends State<MyApp> {
                   page = const HomeScreen();
                   break;
                 case RouteMain.routeChat:
-                  page = const ChatScreen();
+                  final args = settings.arguments as ChatArguments;
+                  page = ChatScreen(
+                    conversationID: args.conversationID,
+                    friend: args.friend,
+                  );
                   break;
                 default:
                   page = const ErrorPageWidget();

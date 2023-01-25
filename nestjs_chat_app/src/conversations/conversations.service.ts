@@ -36,7 +36,7 @@ export class ConversationsService {
         email: email,
       })
       .populate({
-        path: 'user',
+        path: 'receiver',
         match: {
           email: { $in: [email, new RegExp(params.keyword, 'i')] },
         },
@@ -51,14 +51,28 @@ export class ConversationsService {
     };
   }
 
-  async createConversation(conversation: CreateConversationDto) {
-    return this.conversationModel.create(conversation);
+  async createConversation(conversation: CreateConversationDto, email: string) {
+    return (await this.conversationModel.create(conversation)).populate({
+      path: 'receiver',
+      match: {
+        email: { $in: [email] },
+      },
+      select: '-password',
+    });
   }
 
-  async updateConversation(params: UpdateConversationDto) {
-    return this.conversationModel.findByIdAndUpdate(params.conversation_id, {
-      sender: params.sender,
-      message: params.message,
-    });
+  async updateConversation(params: UpdateConversationDto, email: string) {
+    return this.conversationModel
+      .findByIdAndUpdate(params.conversation_id, {
+        sender: params.sender,
+        message: params.message,
+      })
+      .populate({
+        path: 'receiver',
+        match: {
+          email: { $in: [email] },
+        },
+        select: '-password',
+      });
   }
 }

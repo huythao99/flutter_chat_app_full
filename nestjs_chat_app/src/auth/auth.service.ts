@@ -41,15 +41,7 @@ export class AuthService {
 
   async login(user: LoginUserDto) {
     const payload = { username: user.email, sub: jwtConstants.secret };
-    // const res = await this.userModel
-    //   .findOne({ email: user.email, password: user.password })
-    //   .exec();
-    // if (!res) {
-    //   throw new HttpException(
-    //     'Email or password is wrong',
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
+
     return {
       access_token: this.jwtService.sign(payload, {
         expiresIn: 60,

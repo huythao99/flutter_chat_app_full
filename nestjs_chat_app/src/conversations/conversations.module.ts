@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConversationsController } from './conversations.controller';
-import { Conversations } from './conversations';
 import { ConversationsService } from './conversations.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
@@ -15,6 +14,7 @@ import {
     ]),
   ],
   controllers: [ConversationsController],
-  providers: [Conversations, ConversationsService],
+  providers: [ConversationsService],
+  exports: [ConversationsService],
 })
 export class ConversationsModule {}

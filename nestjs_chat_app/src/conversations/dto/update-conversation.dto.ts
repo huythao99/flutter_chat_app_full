@@ -6,7 +6,7 @@ export class UpdateConversationDto {
   sender: string;
 
   @IsNotEmpty()
-  message: string[];
+  message: string;
 
   @IsNotEmpty()
   @IsMongoId()

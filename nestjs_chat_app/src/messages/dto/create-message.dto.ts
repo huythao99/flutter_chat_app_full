@@ -6,9 +6,10 @@ export class CreateMessageDto {
   sender: string;
 
   @IsNotEmpty()
-  @IsMongoId()
   @IsArray()
-  conversation: string[];
+  receiver: string[];
+
+  conversation: string = '';
 
   message: string = '';
 

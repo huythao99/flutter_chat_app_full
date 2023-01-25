@@ -16,4 +16,6 @@ class UserState {
   String get userAvatar => user?.data.avatar ?? '';
 
   String get userName => user?.data.name ?? '';
+
+  String get userID => user?.data.id ?? '';
 }

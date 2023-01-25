@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/paths/user_path.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/constants/route/route_main.dart';
+import 'package:flutter_chat_app/src/features/home/tabs/people/components/person.dart';
+import 'package:flutter_chat_app/src/models/chat_argument.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -47,8 +50,6 @@ class _PeopleTabState extends State<PeopleTab> {
       }
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);
-    } finally {
-      // _refreshIndicatorKey.currentState?.;
     }
   }
 
@@ -61,6 +62,11 @@ class _PeopleTabState extends State<PeopleTab> {
   Future<void> _onRefresh() async {
     _refreshIndicatorKey.currentState?.show();
     _searchPeople(_search.text, 0);
+  }
+
+  void onPressUser(Map<String, dynamic> user) {
+    Navigator.of(context).pushNamed(RouteMain.routeChat,
+        arguments: ChatArguments('', Friend(user['_id'], user['username'], user['avatar'])));
   }
 
   @override
@@ -130,56 +136,10 @@ class _PeopleTabState extends State<PeopleTab> {
               controller: _controller,
               itemCount: users.length,
               itemBuilder: (context, index) {
-                return InkWell(
-                    onTap: () {},
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: DimensionsCustom.calculateWidth(4),
-                          vertical: DimensionsCustom.calculateHeight(1.5)),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: DimensionsCustom.calculateWidth(18),
-                            height: DimensionsCustom.calculateWidth(18),
-                            child: ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(DimensionsCustom.calculateWidth(10)),
-                              child: Image.network(
-                                users[index]['avatar'] ??
-                                    'https://glyndwr.ac.uk/media/marketing/animals/sajad-nori-s1puI2BWQzQ-unsplash-2-1360x1360.jpg',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                              child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: DimensionsCustom.calculateWidth(4)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  users[index]['username'],
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: DimensionsCustom.calculateWidth(4)),
-                                ),
-                                SizedBox(
-                                  height: DimensionsCustom.calculateHeight(1.25),
-                                ),
-                                Text(
-                                  'Profile',
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
-                                )
-                              ],
-                            ),
-                          )),
-                        ],
-                      ),
-                    ));
+                return Person(
+                  user: users[index],
+                  onPress: onPressUser,
+                );
               },
             ),
           ),

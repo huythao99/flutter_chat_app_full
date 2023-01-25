@@ -22,7 +22,7 @@ export class ConversationsController {
     @Request() req: any,
   ) {
     try {
-      return this.conversationService.search(searchParams, req.email);
+      return this.conversationService.search(searchParams, req.user.email);
     } catch (error) {
       throw new HttpException(
         'Something went wrong',

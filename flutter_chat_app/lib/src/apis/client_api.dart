@@ -5,7 +5,7 @@ class ClientApi {
   // static const baseURL = 'http://192.168.1.58:3000/';
   // static const baseURL = 'http://10.0.11.47:3000/';
   static const baseURL = 'http://192.168.0.101:3000/';
-  static var headers = {'content-type': 'application/json'};
+  static var headers = {'content-type': 'application/json', 'Accept': 'application/json'};
   static Dio? _dio;
 
   static initClientApi() {
@@ -32,7 +32,7 @@ class ClientApi {
   }
 
   static getApi(String path, Map<String, dynamic> params) {
-    return _dio?.get(path, queryParameters: params);
+    return _dio?.get(path, queryParameters: params, options: Options(headers: {...headers}));
   }
 
   static postApi(String path, Map<String, dynamic> body, bool isFormData) async {
@@ -44,18 +44,15 @@ class ClientApi {
       });
       return _dio?.post(path, data: formData, options: Options(headers: {...headers}));
     }
-    return _dio?.post(
-      path,
-      data: body,
-    );
+    return _dio?.post(path, data: body, options: Options(headers: {...headers}));
   }
 
   static patchApi(String path, Map<String, dynamic> body) {
-    return _dio?.patch(path, data: body);
+    return _dio?.patch(path, data: body, options: Options(headers: {...headers}));
   }
 
   static deleteApi(String path, Map<String, dynamic> params) {
-    return _dio?.delete(path, queryParameters: params);
+    return _dio?.delete(path, queryParameters: params, options: Options(headers: {...headers}));
   }
 
   static setToken(String? token) {

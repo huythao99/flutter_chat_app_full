@@ -9,13 +9,21 @@ import { SearchUserDto } from './dto/search-user.dto';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async search(params: SearchUserDto) {
+  async search(params: SearchUserDto, email: string) {
     const res = await this.userModel
       .find({
-        $or: [
-          { email: new RegExp(params.keyword, 'i') },
-          { username: new RegExp(params.keyword, 'i') },
-          { phone: new RegExp(params.keyword, 'i') },
+        $and: [
+          {
+            $or: [
+              {
+                email: new RegExp(params.keyword, 'i'),
+              },
+              { username: new RegExp(params.keyword, 'i') },
+              { phone: new RegExp(params.keyword, 'i') },
+            ],
+          },
+
+          { email: { $ne: email } },
         ],
       })
       .select('-password')

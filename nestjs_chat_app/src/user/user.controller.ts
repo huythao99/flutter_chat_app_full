@@ -4,7 +4,10 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { SearchUserDto } from './dto/search-user.dto';
 import { UserService } from './user.service';
 
@@ -12,10 +15,11 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly appService: UserService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('user')
-  async search(@Query() searchParams: SearchUserDto) {
+  async search(@Query() searchParams: SearchUserDto, @Request() req: any) {
     try {
-      return this.appService.search(searchParams);
+      return this.appService.search(searchParams, req.user.email);
     } catch (error) {
       throw new HttpException(
         new Error('Something went wrong'),
