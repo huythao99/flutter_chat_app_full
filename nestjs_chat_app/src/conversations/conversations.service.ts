@@ -27,7 +27,7 @@ export class ConversationsService {
         },
         select: '-password',
       })
-      .skip(params.page * PER_PAGE)
+      .skip(params.skip)
       .limit(PER_PAGE)
       .sort('asc')
       .exec();
@@ -46,7 +46,6 @@ export class ConversationsService {
 
     return {
       total,
-      page: Number(params.page),
       conversations: [...res],
     };
   }

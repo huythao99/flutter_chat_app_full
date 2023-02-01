@@ -35,18 +35,20 @@ class _PeopleTabState extends State<PeopleTab> {
         'page': page,
       };
       Response res = await ClientApi.getApi(UserPath.search, params);
-      if (page > 0) {
-        setState(() {
-          currentPage = page;
-          users.addAll(res.data['users']);
-        });
-      } else {
-        setState(() {
-          users = [...res.data['users']];
+      if (mounted) {
+        if (page > 0) {
+          setState(() {
+            currentPage = page;
+            users.addAll(res.data['users']);
+          });
+        } else {
+          setState(() {
+            users = [...res.data['users']];
 
-          total = res.data['total'];
-          currentPage = page;
-        });
+            total = res.data['total'];
+            currentPage = page;
+          });
+        }
       }
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);

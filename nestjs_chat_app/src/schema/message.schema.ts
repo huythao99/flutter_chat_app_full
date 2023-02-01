@@ -13,9 +13,10 @@ export class Message {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Conversation' })
   conversation: Conversation;
 
-  @Prop({ required: true })
+  @Prop()
   message: string;
 
+  @Prop()
   image: string;
 
   @Prop()

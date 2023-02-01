@@ -7,6 +7,7 @@ import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/paths/chat_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/features/chat/components/message_widget.dart';
 import 'package:flutter_chat_app/src/models/chat_argument.dart';
 import 'package:flutter_chat_app/src/socket/client_socket.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
@@ -25,10 +26,13 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _message = TextEditingController();
   String conversationID = '';
+  List<dynamic> messages = [];
+  int total = 0;
 
   @override
   void initState() {
     super.initState();
+    _getMessages(false);
     if (widget.conversationID != '') {
       ClientSocket.emitEvent('join channel', {
         "conversationID": widget.conversationID,
@@ -45,19 +49,73 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     try {
-      if (_message.text.trim() == '') {
-        return;
-      }
+      // if (_message.text.trim() == '') {
+      //   return;
+      // }
+      // Map<String, dynamic> body = {
+      //   "sender": context.read<UserBloc>().state.userID,
+      //   "receiver": [context.read<UserBloc>().state.userID, widget.friend.id],
+      //   "message": _message.text,
+      //   "conversation": conversationID,
+      // };
+      // Response res = await ClientApi.postApi(ChatPath.sendMessage, body, false);
+      // if (conversationID == '') {
+      //   if (mounted) {
+      //     ClientSocket.emitEvent('join channel', {
+      //       "conversationID": res.data['conversation']['_id'],
+      //       "userID": context.read<UserBloc>().state.userID
+      //     });
+      //   }
+      //   ClientSocket.listenEvent('receiverMessage', (dynamic data) {
+      //     print(data);
+      //   });
+      //   setState(() {
+      //     conversationID = res.data['conversation'];
+      //   });
+      // }
+      Map<String, dynamic> params = {
+        "_id": "63d4e75360958fea0cfd0c0f",
+        "sender": "63c2e23cb01d0aa303bbecf4",
+        "conversation": {
+          '_id': '63d4e6b060958fea0cfd0be6',
+          'sender': '63c2e23cb01d0aa303bbecf4',
+          'receiver': ['63c2e23cb01d0aa303bbecf4', '63c2e340b01d0aa303bbecf7'],
+          'message': '6',
+          '__v': '0'
+        },
+        'message': '6',
+        'image': '',
+        'createdAt': '2023-01-28T09:13:55.378Z',
+        'updatedAt': '2023-01-28T09:13:55.378Z',
+        '__v': '0'
+      };
+      setState(() {
+        messages.insert(0, params);
+      });
+    } on DioError catch (e) {
+      ErrorHandler().showMessage(e, context);
+    }
+  }
+
+  Future<void> _getMessages(bool refresh) async {
+    try {
       Map<String, dynamic> body = {
-        "sender": context.read<UserBloc>().state.userID,
+        "skip": refresh ? 0 : messages.length,
         "receiver": [context.read<UserBloc>().state.userID, widget.friend.id],
-        "message": _message.text,
         "conversation": conversationID,
       };
-      Response res = await ClientApi.postApi(ChatPath.sendMessage, body, false);
-      setState(() {
-        conversationID = res.data['conversation'];
-      });
+      Response res = await ClientApi.getApi(ChatPath.getMessage, body);
+      if (messages.isEmpty && res.data['total'] != 0) {
+        setState(() {
+          total = res.data['total'];
+          messages = res.data['messages'];
+          if (conversationID == '') {
+            conversationID = res.data['conversation']['_id'];
+          }
+        });
+      } else {
+        messages = [...messages, ...res.data['messages']];
+      }
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);
     }
@@ -139,7 +197,33 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
             ),
-            Expanded(child: Container()),
+            Expanded(
+                child: Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: DimensionsCustom.calculateWidth(4),
+                  vertical: DimensionsCustom.calculateHeight(1)),
+              child: ListView.custom(
+                reverse: true,
+                childrenDelegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return MessageWidget(
+                      key: ValueKey('message-${messages[index]['_id']}'),
+                      message: messages[index]['message'],
+                      sender: messages[index]['sender'],
+                    );
+                  },
+                  childCount: messages.length,
+                  findChildIndexCallback: (key) {
+                    final ValueKey<String> valueKey = key as ValueKey<String>;
+                    final index = messages.indexWhere((m) {
+                      return 'message-${m['_id']}' == valueKey.value;
+                    });
+                    if (index == -1) return null;
+                    return index;
+                  },
+                ),
+              ),
+            )),
             Container(
               padding: EdgeInsets.symmetric(
                   horizontal: DimensionsCustom.calculateWidth(4),
