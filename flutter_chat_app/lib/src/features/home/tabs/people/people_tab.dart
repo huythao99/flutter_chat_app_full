@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
+import 'package:flutter_chat_app/src/apis/models/user/users_response.dart';
 import 'package:flutter_chat_app/src/apis/paths/user_path.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 import 'package:flutter_chat_app/src/constants/route/route_main.dart';
+import 'package:flutter_chat_app/src/features/home/tabs/people/components/header_widget.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/people/components/person.dart';
 import 'package:flutter_chat_app/src/models/chat_argument.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
@@ -26,7 +28,7 @@ class _PeopleTabState extends State<PeopleTab> {
 
   int total = 0;
   int currentPage = 0;
-  List<Map<String, dynamic>> users = [];
+  List<User> users = [];
 
   Future<void> _searchPeople(String text, int page) async {
     try {
@@ -35,17 +37,18 @@ class _PeopleTabState extends State<PeopleTab> {
         'page': page,
       };
       Response res = await ClientApi.getApi(UserPath.search, params);
+      UsersReponse data = UsersReponse.fromJson(res.data);
       if (mounted) {
         if (page > 0) {
           setState(() {
             currentPage = page;
-            users.addAll(res.data['users']);
+            users.addAll(data.users);
           });
         } else {
           setState(() {
-            users = [...res.data['users']];
+            users.addAll(data.users);
 
-            total = res.data['total'];
+            total = data.total;
             currentPage = page;
           });
         }
@@ -66,9 +69,9 @@ class _PeopleTabState extends State<PeopleTab> {
     _searchPeople(_search.text, 0);
   }
 
-  void onPressUser(Map<String, dynamic> user) {
+  void onPressUser(User user) {
     Navigator.of(context).pushNamed(RouteMain.routeChat,
-        arguments: ChatArguments('', Friend(user['_id'], user['username'], user['avatar'])));
+        arguments: ChatArguments('', Friend(user.id, user.username, user.avatar)));
   }
 
   @override
@@ -87,16 +90,7 @@ class _PeopleTabState extends State<PeopleTab> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(
-              horizontal: DimensionsCustom.calculateWidth(4),
-              vertical: DimensionsCustom.calculateHeight(1)),
-          child: Text(
-            'Find people',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: DimensionsCustom.calculateWidth(7)),
-          ),
-        ),
+        const HeaderWidget(),
         Container(
             padding: EdgeInsets.symmetric(
               horizontal: DimensionsCustom.calculateWidth(5),
@@ -139,7 +133,7 @@ class _PeopleTabState extends State<PeopleTab> {
               itemCount: users.length,
               itemBuilder: (context, index) {
                 return Person(
-                  user: users[index],
+                  user: users.elementAt(index),
                   onPress: onPressUser,
                 );
               },

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,11 +5,12 @@ import 'package:flutter_chat_app/src/apis/client_api.dart';
 import 'package:flutter_chat_app/src/apis/paths/chat_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/features/chat/components/header_widget.dart';
+import 'package:flutter_chat_app/src/features/chat/components/input_widget.dart';
 import 'package:flutter_chat_app/src/features/chat/components/message_widget.dart';
 import 'package:flutter_chat_app/src/models/chat_argument.dart';
 import 'package:flutter_chat_app/src/socket/client_socket.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key, this.conversationID = '', required this.friend});
@@ -24,7 +23,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final TextEditingController _message = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
   String conversationID = '';
   List<dynamic> messages = [];
   int total = 0;
@@ -47,9 +46,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _sendMessage() async {
+  Future<void> sendMessage() async {
     try {
-      // if (_message.text.trim() == '') {
+      // if (messageController.text.trim() == '') {
       //   return;
       // }
       // Map<String, dynamic> body = {
@@ -121,7 +120,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _onBack() {
+  void onBack() {
     Navigator.of(context).pop();
   }
 
@@ -139,131 +138,39 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: DimensionsCustom.calculateWidth(4),
-                  vertical: DimensionsCustom.calculateHeight(1)),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: _onBack,
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: DimensionsCustom.calculateWidth(7),
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Expanded(
-                      flex: 4,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: DimensionsCustom.calculateWidth(4)),
-                        child: Text(
-                          widget.friend.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: DimensionsCustom.calculateWidth(6)),
-                        ),
-                      )),
-                  Expanded(
-                      flex: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            child: SvgPicture.asset(
-                              'assets/icons/phone.svg',
-                              width: DimensionsCustom.calculateWidth(6),
-                              color: Colors.blue,
-                            ),
-                          ),
-                          InkWell(
-                            child: SvgPicture.asset(
-                              'assets/icons/video.svg',
-                              width: DimensionsCustom.calculateWidth(6),
-                              color: Colors.blue,
-                            ),
-                          ),
-                          InkWell(
-                            child: SvgPicture.asset(
-                              'assets/icons/info_circle.svg',
-                              width: DimensionsCustom.calculateWidth(6),
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
-                      ))
-                ],
-              ),
+            HeaderWidget(
+              friendName: widget.friend.name,
+              onBack: onBack,
             ),
             Expanded(
-                child: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: DimensionsCustom.calculateWidth(4),
-                  vertical: DimensionsCustom.calculateHeight(1)),
-              child: ListView.custom(
-                reverse: true,
-                childrenDelegate: SliverChildBuilderDelegate(
-                  (context, index) {
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: DimensionsCustom.calculateWidth(4),
+                    vertical: DimensionsCustom.calculateHeight(1)),
+                child: ListView.builder(
+                  reverse: true,
+                  itemBuilder: (context, index) {
                     return MessageWidget(
                       key: ValueKey('message-${messages[index]['_id']}'),
                       message: messages[index]['message'],
                       sender: messages[index]['sender'],
                     );
                   },
-                  childCount: messages.length,
-                  findChildIndexCallback: (key) {
-                    final ValueKey<String> valueKey = key as ValueKey<String>;
-                    final index = messages.indexWhere((m) {
-                      return 'message-${m['_id']}' == valueKey.value;
-                    });
-                    if (index == -1) return null;
-                    return index;
-                  },
+                  itemCount: messages.length,
+                  // findChildIndexCallback: (key) {
+                  //   final ValueKey<String> valueKey = key as ValueKey<String>;
+                  //   final index = messages.indexWhere((m) {
+                  //     return 'message-${m['_id']}' == valueKey.value;
+                  //   });
+                  //   if (index == -1) return null;
+                  //   return index;
+                  // },
                 ),
               ),
-            )),
-            Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: DimensionsCustom.calculateWidth(4),
-                  vertical: DimensionsCustom.calculateHeight(1)),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: Container(
-                          height: DimensionsCustom.calculateHeight(5.5),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: DimensionsCustom.calculateWidth(4)),
-                          decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius:
-                                  BorderRadius.circular(DimensionsCustom.calculateWidth(20))),
-                          child: TextField(
-                            controller: _message,
-                            maxLines: 4,
-                            style: TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Something',
-                            ),
-                          ))),
-                  InkWell(
-                    onTap: _sendMessage,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: DimensionsCustom.calculateWidth(4)),
-                      child: Transform.rotate(
-                        angle: -pi / 4,
-                        child: Icon(
-                          Icons.send,
-                          size: DimensionsCustom.calculateWidth(8),
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
+            ),
+            InputWidget(
+              messageController: messageController,
+              sendMessage: sendMessage,
             )
           ],
         ),

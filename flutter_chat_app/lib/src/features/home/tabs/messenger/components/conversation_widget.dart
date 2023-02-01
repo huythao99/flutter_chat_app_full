@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_app/src/apis/models/user/users_response.dart';
+import 'package:flutter_chat_app/src/apis/models/conversation/conversation_response_model.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/utils/utils.dart';
 
-class Person extends StatelessWidget {
-  const Person({super.key, required this.user, required this.onPress});
+class ConversationWidget extends StatelessWidget {
+  const ConversationWidget(
+      {super.key, required this.conversation, required this.onPress, required this.userID});
 
-  final User user;
-  final Function(User) onPress;
+  final Conversation conversation;
+  final String userID;
+  final Function(Conversation) onPress;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: () => onPress(user),
+        onTap: () => onPress(conversation),
         child: Padding(
           padding: EdgeInsets.symmetric(
               horizontal: DimensionsCustom.calculateWidth(4),
@@ -24,7 +27,7 @@ class Person extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(DimensionsCustom.calculateWidth(10)),
                   child: Image.network(
-                    user.avatar,
+                    Utils.getFriendAvatarByID(conversation.receiver, userID),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -37,7 +40,7 @@ class Person extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      user.username,
+                      Utils.getFriendNameByID(conversation.receiver, userID),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -47,13 +50,17 @@ class Person extends StatelessWidget {
                       height: DimensionsCustom.calculateHeight(1.25),
                     ),
                     Text(
-                      'Profile',
+                      conversation.message,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
                     )
                   ],
                 ),
               )),
+              // Text(
+              //   'Time',
+              //   style: TextStyle(fontSize: DimensionsCustom.calculateWidth(3)),
+              // )
             ],
           ),
         ));

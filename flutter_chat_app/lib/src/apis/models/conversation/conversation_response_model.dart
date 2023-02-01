@@ -1,19 +1,14 @@
-import 'dart:convert';
-
 class ConversationResponse {
-  // final List<Conversation> conversations;
+  final List<Conversation> conversations;
   final int total;
 
-  const ConversationResponse({required this.total});
+  const ConversationResponse({required this.total, required this.conversations});
 
   factory ConversationResponse.fromJson(Map<String, dynamic> json) {
-    print(json['conversations']);
-    // print(jsonDecode(json['conversations']));
-    // Iterable list = jsonDecode(json['conversations']);
-    // print(list);
-    // List<Conversation> conversations =
-    //     List<Conversation>.from(list.map((conversation) => Conversation.fromJson(conversation)));
-    return ConversationResponse(total: json['total']);
+    Iterable list = json['conversations'];
+    List<Conversation> conversations =
+        List<Conversation>.from(list.map((conversation) => Conversation.fromJson(conversation)));
+    return ConversationResponse(total: json['total'], conversations: conversations);
   }
 }
 
@@ -31,11 +26,11 @@ class Conversation {
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
-    Iterable list = jsonDecode(json['receiver']);
+    Iterable list = json['receiver'];
     List<Receiver> receiver =
         List<Receiver>.from(list.map((receiver) => Receiver.fromJson(receiver)));
     return Conversation(
-        id: json["id"], message: json["message"], sender: json["sender"], receiver: receiver);
+        id: json["_id"], message: json["message"], sender: json["sender"], receiver: receiver);
   }
 }
 
@@ -55,7 +50,7 @@ class Receiver {
   });
 
   factory Receiver.fromJson(Map<String, dynamic> json) => Receiver(
-      id: json["id"],
+      id: json["_id"],
       email: json["email"],
       avatar: json["avatar"],
       username: json['username'],
