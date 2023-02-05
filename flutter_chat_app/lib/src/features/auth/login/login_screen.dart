@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (res.data != null && context.mounted) {
           Map<String, dynamic> newUser = {
             ...res.data,
-            "token": res.data['token'],
+            "token": res.data['access_token'],
             "refreshToken": res.data['refresh_token'],
             "id": res.data['_id'],
             "name": res.data['username'],

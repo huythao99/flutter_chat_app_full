@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/messenger/messenger_tab.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/people/people_tab.dart';
@@ -48,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         elevation: 0,
         toolbarOpacity: 0,
         backgroundColor: Colors.white,
+        systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.white),
       ),
       backgroundColor: Colors.white,
       body: Container(

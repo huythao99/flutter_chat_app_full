@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_app/src/apis/client_api.dart';
+import 'package:flutter_chat_app/src/apis/models/message/message_response.dart';
 import 'package:flutter_chat_app/src/apis/paths/chat_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
@@ -25,7 +26,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController messageController = TextEditingController();
   String conversationID = '';
-  List<dynamic> messages = [];
+  List<Message> messages = [];
   int total = 0;
 
   @override
@@ -89,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
         '__v': '0'
       };
       setState(() {
-        messages.insert(0, params);
+        messages.insert(0, Message.fromJson(params));
       });
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);
@@ -104,16 +105,17 @@ class _ChatScreenState extends State<ChatScreen> {
         "conversation": conversationID,
       };
       Response res = await ClientApi.getApi(ChatPath.getMessage, body);
-      if (messages.isEmpty && res.data['total'] != 0) {
+      MessageResposne newResponse = MessageResposne.fromJson(res.data);
+      if (messages.isEmpty && newResponse.total != 0) {
         setState(() {
-          total = res.data['total'];
-          messages = res.data['messages'];
+          total = newResponse.total;
+          messages = newResponse.messages;
           if (conversationID == '') {
-            conversationID = res.data['conversation']['_id'];
+            conversationID = newResponse.conversation.id;
           }
         });
       } else {
-        messages = [...messages, ...res.data['messages']];
+        messages.addAll(newResponse.messages);
       }
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);
@@ -151,20 +153,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   reverse: true,
                   itemBuilder: (context, index) {
                     return MessageWidget(
-                      key: ValueKey('message-${messages[index]['_id']}'),
-                      message: messages[index]['message'],
-                      sender: messages[index]['sender'],
+                      key: ValueKey('message-${messages.elementAt(index).id}'),
+                      message: messages.elementAt(index).message,
+                      sender: messages.elementAt(index).sender,
                     );
                   },
                   itemCount: messages.length,
-                  // findChildIndexCallback: (key) {
-                  //   final ValueKey<String> valueKey = key as ValueKey<String>;
-                  //   final index = messages.indexWhere((m) {
-                  //     return 'message-${m['_id']}' == valueKey.value;
-                  //   });
-                  //   if (index == -1) return null;
-                  //   return index;
-                  // },
+                  findChildIndexCallback: (key) {
+                    final ValueKey<String> valueKey = key as ValueKey<String>;
+                    final index = messages.indexWhere((m) {
+                      return 'message-${m.id}' == valueKey.value;
+                    });
+                    if (index == -1) return null;
+                    return index;
+                  },
                 ),
               ),
             ),
