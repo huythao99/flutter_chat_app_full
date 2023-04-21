@@ -6,11 +6,13 @@ import 'package:flutter_chat_app/src/apis/models/conversation/conversation_respo
 import 'package:flutter_chat_app/src/apis/paths/conversation_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/constants/event_socket.dart';
 import 'package:flutter_chat_app/src/constants/route/route_main.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/messenger/components/conversation_widget.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/messenger/components/header_widget.dart';
 import 'package:flutter_chat_app/src/features/home/tabs/messenger/components/search_widget.dart';
 import 'package:flutter_chat_app/src/models/chat_argument.dart';
+import 'package:flutter_chat_app/src/socket/client_socket.dart';
 import 'package:flutter_chat_app/src/utils/error_handler.dart';
 import 'package:flutter_chat_app/src/utils/utils.dart';
 
@@ -36,7 +38,8 @@ class _MessengerTabState extends State<MessengerTab> {
         "skip": refresh ? 0 : conversations.length
       };
 
-      Response res = await ClientApi.getApi(ConversationPath.getConversation, params);
+      Response res =
+          await ClientApi.getApi(ConversationPath.getConversation, params);
       ConversationResponse data = ConversationResponse.fromJson(res.data);
       if (mounted) {
         if (refresh) {
@@ -72,14 +75,39 @@ class _MessengerTabState extends State<MessengerTab> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    ClientSocket.stopListenEvent(EventsSocket.createConversation);
+    ClientSocket.stopListenEvent(EventsSocket.updateConversation);
+  }
+
+  @override
   void initState() {
     super.initState();
-
+    ClientSocket.listenEvent(EventsSocket.createConversation, (dynamic data) {
+      Conversation conversation = Conversation.fromJson(data);
+      setState(() {
+        if (mounted) {
+          conversations.insert(0, conversation);
+        }
+      });
+    });
+    ClientSocket.listenEvent(EventsSocket.updateConversation, (dynamic data) {
+      Conversation conversation = Conversation.fromJson(data);
+      setState(() {
+        final index = conversations
+            .indexWhere((element) => element.id == conversation.id);
+        if (index != -1 && mounted) {
+          conversations[index] = conversation;
+        }
+      });
+    });
     userID = context.read<UserBloc>().state.userID;
 
     _getConversation(false);
     _controller.addListener(() {
-      if (_controller.position.extentAfter < DimensionsCustom.endReachedThreshold) {
+      if (_controller.position.extentAfter <
+          DimensionsCustom.endReachedThreshold) {
         _onLoadMore();
       }
     });
@@ -96,7 +124,8 @@ class _MessengerTabState extends State<MessengerTab> {
             child: ListView.builder(
           controller: _controller,
           itemCount: conversations.length,
-          padding: EdgeInsets.symmetric(vertical: DimensionsCustom.calculateHeight(1)),
+          padding: EdgeInsets.symmetric(
+              vertical: DimensionsCustom.calculateHeight(1)),
           itemBuilder: (context, index) {
             return ConversationWidget(
               conversation: conversations.elementAt(index),

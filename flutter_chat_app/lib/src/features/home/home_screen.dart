@@ -13,7 +13,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animation;
 
   int _selectedIndex = 0;
@@ -28,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     if (index == 1) {
       _animation.animateTo(120, duration: const Duration(milliseconds: 400));
     }
-
     setState(() {
       _selectedIndex = index;
     });
@@ -49,11 +49,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         elevation: 0,
         toolbarOpacity: 0,
         backgroundColor: Colors.white,
-        systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.white),
+        systemOverlayStyle:
+            const SystemUiOverlayStyle(statusBarColor: Colors.white),
       ),
       backgroundColor: Colors.white,
-      body: Container(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
@@ -65,7 +67,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               color: Colors.grey,
             ),
             activeIcon: SvgPicture.asset('assets/icons/facebook_messenger.svg',
-                width: DimensionsCustom.calculateWidth(7), color: Colors.blue.shade300),
+                width: DimensionsCustom.calculateWidth(7),
+                color: Colors.blue.shade300),
             label: 'Chat',
           ),
           BottomNavigationBarItem(

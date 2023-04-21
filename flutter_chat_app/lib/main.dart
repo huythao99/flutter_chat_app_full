@@ -52,10 +52,12 @@ class _MyAppState extends State<MyApp> {
     await SharedStorage().initPreferences();
     final String user = await SharedStorage().getStringData(KeyStorage.user);
     if (user != '' && context.mounted) {
-      BlocProvider.of<UserBloc>(context).add(UserChanged(User.fromJson(jsonDecode(user)['data'])));
+      BlocProvider.of<UserBloc>(context)
+          .add(UserChanged(User.fromJson(jsonDecode(user)['data'])));
     } else {
       _onChangeStatus(false);
-      navigatorKey.currentState?.pushNamedAndRemoveUntil(RouteAuth.routeLogin, (route) => false);
+      navigatorKey.currentState
+          ?.pushNamedAndRemoveUntil(RouteAuth.routeLogin, (route) => false);
     }
   }
 
@@ -71,12 +73,12 @@ class _MyAppState extends State<MyApp> {
         listener: (context, state) {
           if (state.userToken != '' && !authenticated) {
             _onChangeStatus(true);
-            navigatorKey.currentState
-                ?.pushNamedAndRemoveUntil(RouteMain.routeHome, (route) => false);
+            navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                RouteMain.routeHome, (route) => false);
           } else {
             _onChangeStatus(false);
-            navigatorKey.currentState
-                ?.pushNamedAndRemoveUntil(RouteAuth.routeLogin, (route) => false);
+            navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                RouteAuth.routeLogin, (route) => false);
           }
         },
         listenWhen: (previous, current) {

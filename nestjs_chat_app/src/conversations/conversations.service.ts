@@ -61,17 +61,20 @@ export class ConversationsService {
   }
 
   async updateConversation(params: UpdateConversationDto, email: string) {
-    return this.conversationModel
-      .findByIdAndUpdate(params.conversation_id, {
-        sender: params.sender,
-        message: params.message,
-      })
-      .populate({
-        path: 'receiver',
-        match: {
-          email: { $in: [email] },
-        },
-        select: '-password',
-      });
+    await this.conversationModel.findByIdAndUpdate(params.conversation_id, {
+      sender: params.sender,
+      message: params.message,
+    });
+    return this.conversationModel.findById(params.conversation_id).populate({
+      path: 'receiver',
+      match: {
+        email: { $in: [email] },
+      },
+      select: '-password',
+    });
+  }
+
+  async searchById(id: string) {
+    return this.conversationModel.findById(id);
   }
 }

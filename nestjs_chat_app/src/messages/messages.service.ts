@@ -36,21 +36,25 @@ export class MessagesService {
         image: message.image || '',
       };
       const newMessage = await this.messageModel.create(messagePayload);
+      const conversation = await this.conversationService.searchById(
+        res._id.toString(),
+      );
       this.socket.emitEventToRoom(
         EVENT.NEW_MESSAGE,
         res.toObject()._id.toString(),
         {
           ...newMessage.toObject(),
+          conversation: {
+            ...conversation?.toObject(),
+          },
         },
       );
-      this.socket.emitEventToRoom(
-        EVENT.CREATE_CONVERSATION,
-        res.toObject()._id.toString(),
-        { ...res.toObject() },
-      );
+      this.socket.emitEvent(EVENT.CREATE_CONVERSATION, { ...res.toObject() });
       return {
-        message: { ...newMessage.toObject() },
-        conversation: { ...res.toObject() },
+        message: {
+          ...newMessage.toObject(),
+          conversation: { ...conversation?.toObject() },
+        },
       };
     } else {
       const messagePayload = {
@@ -68,25 +72,33 @@ export class MessagesService {
         email,
       );
       const newMessage = await this.messageModel.create(messagePayload);
-      this.socket.emitEventToRoom(EVENT.NEW_MESSAGE, message.conversation, {
-        ...newMessage.toObject(),
-      });
-      this.socket.emitEventToRoom(
-        EVENT.UPDATE_CONVERSATION,
+
+      const conversation = await this.conversationService.searchById(
         message.conversation,
-        { ...res?.toObject() },
       );
 
+      this.socket.emitEventToRoom(EVENT.NEW_MESSAGE, message.conversation, {
+        ...newMessage.toObject(),
+        conversation: {
+          ...conversation?.toObject(),
+        },
+      });
+      this.socket.emitEvent(EVENT.UPDATE_CONVERSATION, {
+        ...res?.toObject(),
+      });
       return {
         message: {
           ...newMessage.toObject(),
+          conversation: {
+            ...conversation?.toObject(),
+          },
         },
       };
     }
   }
 
   async getMessages(params: GetMessageDto) {
-    if (params.conversationID == '') {
+    if (params.conversationID === '') {
       const res = await this.messageModel
         .find()
         .populate({

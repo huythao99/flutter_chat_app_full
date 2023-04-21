@@ -2,9 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
 
 class ClientApi {
-  // static const baseURL = 'http://192.168.1.58:3000/';
-  static const baseURL = 'http://192.168.0.100:3000/';
-  static var headers = {'content-type': 'application/json', 'Accept': 'application/json'};
+  // static const baseURL = 'http://172.16.1.27:3000/';
+  // static const socketURL = 'http://172.16.1.27:80';
+  static const baseURL = 'http://192.168.0.101:3000/';
+  static const socketURL = 'http://192.168.0.101:80';
+  static var headers = {
+    'content-type': 'application/json',
+    'Accept': 'application/json'
+  };
   static Dio? _dio;
 
   static initClientApi() {
@@ -31,27 +36,34 @@ class ClientApi {
   }
 
   static getApi(String path, Map<String, dynamic> params) {
-    return _dio?.get(path, queryParameters: params, options: Options(headers: {...headers}));
+    return _dio?.get(path,
+        queryParameters: params, options: Options(headers: {...headers}));
   }
 
-  static postApi(String path, Map<String, dynamic> body, bool isFormData) async {
+  static postApi(
+      String path, Map<String, dynamic> body, bool isFormData) async {
     if (isFormData) {
       var formData = FormData.fromMap({
         ...body,
         'avatar': await MultipartFile.fromFile(body['avatar']['path'],
-            filename: body['avatar']['path'], contentType: MediaType('image', 'png'))
+            filename: body['avatar']['path'],
+            contentType: MediaType('image', 'png'))
       });
-      return _dio?.post(path, data: formData, options: Options(headers: {...headers}));
+      return _dio?.post(path,
+          data: formData, options: Options(headers: {...headers}));
     }
-    return _dio?.post(path, data: body, options: Options(headers: {...headers}));
+    return _dio?.post(path,
+        data: body, options: Options(headers: {...headers}));
   }
 
   static patchApi(String path, Map<String, dynamic> body) {
-    return _dio?.patch(path, data: body, options: Options(headers: {...headers}));
+    return _dio?.patch(path,
+        data: body, options: Options(headers: {...headers}));
   }
 
   static deleteApi(String path, Map<String, dynamic> params) {
-    return _dio?.delete(path, queryParameters: params, options: Options(headers: {...headers}));
+    return _dio?.delete(path,
+        queryParameters: params, options: Options(headers: {...headers}));
   }
 
   static setToken(String? token) {

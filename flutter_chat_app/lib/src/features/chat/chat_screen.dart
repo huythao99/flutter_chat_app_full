@@ -6,6 +6,7 @@ import 'package:flutter_chat_app/src/apis/models/message/message_response.dart';
 import 'package:flutter_chat_app/src/apis/paths/chat_path.dart';
 import 'package:flutter_chat_app/src/blocs/user/user_bloc.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
+import 'package:flutter_chat_app/src/constants/event_socket.dart';
 import 'package:flutter_chat_app/src/features/chat/components/header_widget.dart';
 import 'package:flutter_chat_app/src/features/chat/components/input_widget.dart';
 import 'package:flutter_chat_app/src/features/chat/components/message_widget.dart';
@@ -30,16 +31,25 @@ class _ChatScreenState extends State<ChatScreen> {
   int total = 0;
 
   @override
+  void dispose() {
+    super.dispose();
+    ClientSocket.stopListenEvent(EventsSocket.newMessage);
+  }
+
+  @override
   void initState() {
     super.initState();
     _getMessages(false);
     if (widget.conversationID != '') {
-      ClientSocket.emitEvent('join channel', {
+      ClientSocket.emitEvent(EventsSocket.joinChanel, {
         "conversationID": widget.conversationID,
         "userID": context.read<UserBloc>().state.userID
       });
-      ClientSocket.listenEvent('receiverMessage', (dynamic data) {
-        print(data);
+      ClientSocket.listenEvent(EventsSocket.newMessage, (dynamic data) {
+        Message message = Message.fromJson(data);
+        setState(() {
+          messages.insert(0, message);
+        });
       });
       setState(() {
         conversationID = widget.conversationID;
@@ -49,51 +59,40 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> sendMessage() async {
     try {
-      // if (messageController.text.trim() == '') {
-      //   return;
-      // }
-      // Map<String, dynamic> body = {
-      //   "sender": context.read<UserBloc>().state.userID,
-      //   "receiver": [context.read<UserBloc>().state.userID, widget.friend.id],
-      //   "message": _message.text,
-      //   "conversation": conversationID,
-      // };
-      // Response res = await ClientApi.postApi(ChatPath.sendMessage, body, false);
-      // if (conversationID == '') {
-      //   if (mounted) {
-      //     ClientSocket.emitEvent('join channel', {
-      //       "conversationID": res.data['conversation']['_id'],
-      //       "userID": context.read<UserBloc>().state.userID
-      //     });
-      //   }
-      //   ClientSocket.listenEvent('receiverMessage', (dynamic data) {
-      //     print(data);
-      //   });
-      //   setState(() {
-      //     conversationID = res.data['conversation'];
-      //   });
-      // }
-      Map<String, dynamic> params = {
-        "_id": "63d4e75360958fea0cfd0c0f",
-        "sender": "63c2e23cb01d0aa303bbecf4",
-        "conversation": {
-          '_id': '63d4e6b060958fea0cfd0be6',
-          'sender': '63c2e23cb01d0aa303bbecf4',
-          'receiver': ['63c2e23cb01d0aa303bbecf4', '63c2e340b01d0aa303bbecf7'],
-          'message': '6',
-          '__v': '0'
-        },
-        'message': '6',
-        'image': '',
-        'createdAt': '2023-01-28T09:13:55.378Z',
-        'updatedAt': '2023-01-28T09:13:55.378Z',
-        '__v': '0'
+      if (messageController.text.trim() == '') {
+        return;
+      }
+      Map<String, dynamic> body = {
+        "sender": context.read<UserBloc>().state.userID,
+        "receiver": [context.read<UserBloc>().state.userID, widget.friend.id],
+        "message": messageController.text,
+        "conversation": conversationID,
       };
+      Response res = await ClientApi.postApi(ChatPath.sendMessage, body, false);
+      Message message = Message.fromJson(res.data['message']);
+      if (conversationID == '') {
+        if (mounted) {
+          ClientSocket.emitEvent('join channel', {
+            "conversationID": res.data['conversation']['_id'],
+            "userID": context.read<UserBloc>().state.userID
+          });
+        }
+
+        setState(() {
+          conversationID = res.data['conversation'];
+        });
+      }
+      int index = messages.indexWhere((element) => element.id == message.id);
+      if (index != -1) {
+        return;
+      }
       setState(() {
-        messages.insert(0, Message.fromJson(params));
+        messages.insert(0, message);
       });
     } on DioError catch (e) {
       ErrorHandler().showMessage(e, context);
+    } finally {
+      messageController.clear();
     }
   }
 
@@ -153,9 +152,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   reverse: true,
                   itemBuilder: (context, index) {
                     return MessageWidget(
-                      key: ValueKey('message-${messages.elementAt(index).id}'),
-                      message: messages.elementAt(index).message,
-                      sender: messages.elementAt(index).sender,
+                      ValueKey('message-${messages.elementAt(index).id}'),
+                      messages.elementAt(index).message,
+                      messages.elementAt(index).sender,
                     );
                   },
                   itemCount: messages.length,
@@ -165,7 +164,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       return 'message-${m.id}' == valueKey.value;
                     });
                     if (index == -1) return null;
-                    return index;
+                    return null;
                   },
                 ),
               ),

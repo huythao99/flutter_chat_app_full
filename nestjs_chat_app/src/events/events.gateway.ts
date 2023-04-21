@@ -3,10 +3,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Socket } from 'dgram';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import { EVENT } from './constants';
 
-@WebSocketGateway({
+@WebSocketGateway(80, {
   cors: {
     origin: '*',
   },
@@ -23,7 +23,7 @@ export class EventsGateway {
     this.server.to(room).emit(eventName, payload);
   }
 
-  @SubscribeMessage('events')
+  @SubscribeMessage(EVENT.JOIN_ROOM)
   handleEvent(
     client: Socket,
     data: {
@@ -31,8 +31,6 @@ export class EventsGateway {
       userID: string;
     },
   ) {
-    client.on('join channel', (socket) => {
-      socket.join(data.conversationID);
-    });
+    client.join(data.conversationID);
   }
 }

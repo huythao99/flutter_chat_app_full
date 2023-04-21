@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/src/constants/dimensions.dart';
 
 class InputWidget extends StatelessWidget {
-  const InputWidget({super.key, required this.messageController, required this.sendMessage});
+  const InputWidget(
+      {super.key, required this.messageController, required this.sendMessage});
 
   final TextEditingController messageController;
   final Function() sendMessage;
@@ -19,24 +20,34 @@ class InputWidget extends StatelessWidget {
         children: [
           Expanded(
               child: Container(
+                  alignment: Alignment.center,
                   height: DimensionsCustom.calculateHeight(5.5),
-                  padding: EdgeInsets.symmetric(horizontal: DimensionsCustom.calculateWidth(4)),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: DimensionsCustom.calculateWidth(4),
+                      vertical: 0),
                   decoration: BoxDecoration(
                       border: Border.all(),
-                      borderRadius: BorderRadius.circular(DimensionsCustom.calculateWidth(20))),
+                      borderRadius: BorderRadius.circular(
+                          DimensionsCustom.calculateWidth(20))),
                   child: TextField(
                     controller: messageController,
-                    maxLines: 4,
-                    style: TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
+                    expands: true,
+                    maxLines: null,
+                    textAlignVertical: TextAlignVertical.center,
+                    style:
+                        TextStyle(fontSize: DimensionsCustom.calculateWidth(4)),
                     decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Something',
-                    ),
+                        fillColor: Colors.white,
+                        filled: true,
+                        border: InputBorder.none,
+                        hintText: 'Something',
+                        contentPadding: EdgeInsets.zero),
                   ))),
           InkWell(
             onTap: sendMessage,
             child: Padding(
-              padding: EdgeInsets.only(left: DimensionsCustom.calculateWidth(4)),
+              padding:
+                  EdgeInsets.only(left: DimensionsCustom.calculateWidth(4)),
               child: Transform.rotate(
                 angle: -pi / 4,
                 child: Icon(
